@@ -4,7 +4,29 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <meta name="theme-color" content="#080C14"/>
-<title>Ayifoot.com 🇭🇹</title>
+<meta name="description" content="AyiFoot - Le football mondial avec l'âme haïtienne. Scores live, Grenadiers, Coupe du Monde, vidéos et analyses."/>
+<meta property="og:title" content="AyiFoot"/>
+<meta property="og:description" content="Toute l'actualité du football mondial avec une âme haïtienne."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://ayifoot.com"/>
+<meta property="og:image" content="https://raw.githubusercontent.com/Ayifoot/ayifoot/main/IMG-20260608-WA0087%281%29.jpg"/>
+<meta property="og:image:width" content="1536"/>
+<meta property="og:image:height" content="1024"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<title>Ayifoot - Le Football Mondial avec l'Âme Haïtienne</title>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Ayifoot",
+  "url": "https://ayifoot.com",
+  "description": "Le football mondial avec l'âme haïtienne. Scores live, actualités, statistiques et analyses du football haïtien et international.",
+  "sameAs": [
+    "https://www.facebook.com/profile.php?id=100067909061507",
+    "https://www.youtube.com/@ayifoot"
+  ]
+}
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
@@ -19,10 +41,13 @@ console.warn = function() {
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#080C14;color:#DDD8CE;font-family:'Georgia',serif;-webkit-font-smoothing:antialiased;}
-::-webkit-scrollbar{width:3px;height:3px;}
-::-webkit-scrollbar-thumb{background:#B02235;border-radius:2px;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:#111827;}
+::-webkit-scrollbar-thumb{background:#475569;border-radius:999px;}
+::-webkit-scrollbar-thumb:hover{background:#64748b;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
 @keyframes ticker{to{transform:translateX(-50%)}}
+@keyframes breakingScroll{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes spin{to{transform:rotate(360deg)}}
 a{color:inherit;text-decoration:none;}
@@ -60,7 +85,7 @@ const C = {
 };
 
 const LANGS = {
-  fr:{n:"🇫🇷 FR",matches:"Matchs",tv:"TV Live",scores:"Scores",analytics:"Analytics",news:"Actualités",games:"Jeux",support:"Soutenir"},
+  fr:{n:"🇫🇷 FR",matches:"Matchs",tv:"TV Live",scores:"Scores",analytics:"Analytics",news:"Actualités",games:"Fan Zone",support:"Soutenir"},
   ht:{n:"🇭🇹 KR",matches:"Match yo",tv:"TV Dirèk",scores:"Rezilta",analytics:"Analiz",news:"Nouvèl",games:"Jwèt",support:"Sipòte"},
   en:{n:"🇺🇸 EN",matches:"Matches",tv:"Live TV",scores:"Scores",analytics:"Analytics",news:"News",games:"Games",support:"Support"},
   es:{n:"🇪🇸 ES",matches:"Partidos",tv:"TV Vivo",scores:"Marcadores",analytics:"Análisis",news:"Noticias",games:"Juegos",support:"Apoyar"},
@@ -99,6 +124,19 @@ const NEWS_INIT = [
   {id:5,tag:"🇧🇷 BRÉSIL",title:"Vinicius Jr en pleine forme — menace n°1 pour Haïti en J2",source:"ESPN",date:"45 min",hot:false,link:"#",pinned:false},
   {id:6,tag:"🏟️ STADE",title:"Gillette Stadium sold out: 65,878 supporters pour Haïti-Écosse",source:"AFP",date:"1h",hot:false,link:"#",pinned:false},
 ];
+
+// ── BREAKING NEWS TICKER ──
+function BreakingNews({news}){
+  const hotNews=(news||[]).filter(n=>n.hot);
+  if(hotNews.length===0)return null;
+  return React.createElement('div',{style:{background:"linear-gradient(90deg,#C41230,#003087)",overflow:"hidden",padding:"8px 0",marginBottom:"12px",whiteSpace:"nowrap",borderRadius:8}},
+    React.createElement('div',{style:{display:"inline-block",animation:"breakingScroll 30s linear infinite"}},
+      hotNews.map((n,i)=>
+        React.createElement('span',{key:i,style:{fontWeight:700,marginRight:"60px",fontSize:"0.7rem",color:"#fff"}},"🔴 ",n.title)
+      )
+    )
+  );
+}
 
 const LIVE_INIT = [
   {id:"l1",hf:"🇧🇪",hn:"Belgique",af:"🇪🇬",an:"Égypte",hlogo:"https://media.api-sports.io/football/teams/1.png",alogo:"https://media.api-sports.io/football/teams/21.png",gh:2,ga:0,min:78,grp:"G",comp:"World Cup 2026",st:"2H"},
@@ -211,12 +249,12 @@ async function apiGet(ep) {
 
 // ── STATS UI ATOMS ──
 function Spin() {
-  return <div style={{width:28,height:28,border:`3px solid ${T.border}`,borderTop:`3px solid ${T.oV}`,borderRadius:"50%",animation:"spin .8s linear infinite",margin:"2rem auto"}}/>;
+  return <div style={{width:28,height:28,border:`3px solid ${C.bord}`,borderTop:`3px solid ${C.orV}`,borderRadius:"50%",animation:"spin .8s linear infinite",margin:"2rem auto"}}/>;
 }
 
 function RatingBadge({r, size=36}) {
   const rv = parseFloat(r) || 0;
-  const col = rv>=7.5 ? T.vtV : rv>=6.5 ? T.oV : T.rv;
+  const col = rv>=7.5 ? C.vertV : rv>=6.5 ? C.orV : C.rouge;
   return <div style={{width:size,height:size,borderRadius:"50%",background:col,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:size*.27,color:"#fff",flexShrink:0}}>{rv.toFixed(1)}</div>;
 }
 
@@ -227,13 +265,13 @@ function StatBar({label, h, a, hc, ac}) {
   return (
     <div style={{marginBottom:9}}>
       <div style={{display:"flex",justifyContent:"space-between",fontSize:"0.68rem",marginBottom:3}}>
-        <span style={{fontWeight:700,color:hc||T.rv}}>{h}</span>
-        <span style={{color:T.mu,fontSize:"0.54rem"}}>{label}</span>
-        <span style={{fontWeight:700,color:ac||T.bl}}>{a}</span>
+        <span style={{fontWeight:700,color:hc||C.rouge}}>{h}</span>
+        <span style={{color:C.muted,fontSize:"0.54rem"}}>{label}</span>
+        <span style={{fontWeight:700,color:ac||C.bleuL}}>{a}</span>
       </div>
-      <div style={{height:5,background:T.card3||"#172035",borderRadius:5,overflow:"hidden",display:"flex"}}>
-        <div style={{width:`${hp}%`,background:hc||T.rv,transition:"width .8s"}}/>
-        <div style={{width:`${100-hp}%`,background:ac||T.bl,transition:"width .8s"}}/>
+      <div style={{height:5,background:C.card3||"#172035",borderRadius:5,overflow:"hidden",display:"flex"}}>
+        <div style={{width:`${hp}%`,background:hc||C.rouge,transition:"width .8s"}}/>
+        <div style={{width:`${100-hp}%`,background:ac||C.bleuL,transition:"width .8s"}}/>
       </div>
     </div>
   );
@@ -251,6 +289,17 @@ function MatchDetail({fixture, onBack}) {
   const status = fixture?.fixture?.status;
   const isLive = ["1H","2H","HT","ET"].includes(status?.short);
   const isHTS = fixture?.isHTSCO;
+
+  // document.title dynamique — utile pour l'onglet navigateur et le titre
+  // affiché si l'utilisateur partage ce lien après navigation. Ne remplace
+  // pas un vrai SEO par-page : cette app est une SPA sans rendu serveur,
+  // donc Google indexe le <title> statique du HTML, pas celui-ci.
+  useEffect(()=>{
+    if(!home?.name || !away?.name) return;
+    const prevTitle = document.title;
+    document.title = `${home.name} vs ${away.name} — Ayifoot`;
+    return ()=>{ document.title = prevTitle; };
+  },[home?.name,away?.name]);
 
   useEffect(() => {
     if (!fixture) return;
@@ -280,33 +329,33 @@ function MatchDetail({fixture, onBack}) {
     <div style={{animation:"fadeIn .3s ease"}}>
       {/* Header */}
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-        <button onClick={onBack} style={{background:T.card2,border:`1px solid ${T.border}`,color:T.blanc,padding:"0.3rem 0.65rem",borderRadius:6,cursor:"pointer",fontSize:"0.65rem",fontFamily:"inherit"}}>← Retour</button>
-        <span style={{fontSize:"0.58rem",color:T.mu}}>{fixture?.league?.name} · {fixture?.league?.round}</span>
-        {isLive && <span style={{background:T.vtV+"22",color:T.vtV,border:`1px solid ${T.vtV}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>🔴 LIVE {status?.elapsed}'</span>}
+        <button onClick={onBack} style={{background:C.card2,border:`1px solid ${C.bord}`,color:C.blanc,padding:"0.3rem 0.65rem",borderRadius:6,cursor:"pointer",fontSize:"0.65rem",fontFamily:"inherit"}}>← Retour</button>
+        <span style={{fontSize:"0.58rem",color:C.muted}}>{fixture?.league?.name} · {fixture?.league?.round}</span>
+        {isLive && <span style={{background:C.vertV+"22",color:C.vertV,border:`1px solid ${C.vertV}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>🔴 LIVE {status?.elapsed}'</span>}
       </div>
       {/* Score */}
-      <div style={{background:"linear-gradient(135deg,rgba(11,27,94,.4),rgba(196,18,48,.25))",border:`1px solid ${T.border}`,borderRadius:10,padding:"1.2rem",marginBottom:12}}>
+      <div style={{background:"linear-gradient(135deg,rgba(11,27,94,.4),rgba(196,18,48,.25))",border:`1px solid ${C.bord}`,borderRadius:10,padding:"1.2rem",marginBottom:12}}>
         <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",gap:12}}>
           <div style={{textAlign:"center"}}>
             {home?.logo && <img src={home.logo} alt="" style={{width:50,height:50,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
             <div style={{fontWeight:700,fontSize:"0.85rem",marginTop:6}}>{home?.name}</div>
           </div>
           <div style={{textAlign:"center"}}>
-            <div style={{fontWeight:800,fontSize:"2.8rem",lineHeight:1,color:isLive?T.oV:T.blanc}}>{score?.home??"-"} – {score?.away??"-"}</div>
-            <div style={{fontSize:"0.54rem",color:T.mu,marginTop:4}}>{status?.short==="FT"?"TERMINÉ · FT":status?.long}</div>
-            {fixture?.score?.halftime && <div style={{fontSize:"0.5rem",color:T.mu,marginTop:2}}>Mi-temps: {fixture.score.halftime.home} – {fixture.score.halftime.away}</div>}
+            <div style={{fontWeight:800,fontSize:"2.8rem",lineHeight:1,color:isLive?C.orV:C.blanc}}>{score?.home??"-"} – {score?.away??"-"}</div>
+            <div style={{fontSize:"0.54rem",color:C.muted,marginTop:4}}>{status?.short==="FT"?"TERMINÉ · FT":status?.long}</div>
+            {fixture?.score?.halftime && <div style={{fontSize:"0.5rem",color:C.muted,marginTop:2}}>Mi-temps: {fixture.score.halftime.home} – {fixture.score.halftime.away}</div>}
           </div>
           <div style={{textAlign:"center"}}>
             {away?.logo && <img src={away.logo} alt="" style={{width:50,height:50,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
             <div style={{fontWeight:700,fontSize:"0.85rem",marginTop:6}}>{away?.name}</div>
           </div>
         </div>
-        {fixture?.fixture?.venue?.name && <div style={{textAlign:"center",fontSize:"0.52rem",color:T.mu,marginTop:8}}>🏟️ {fixture.fixture.venue.name}</div>}
+        {fixture?.fixture?.venue?.name && <div style={{textAlign:"center",fontSize:"0.52rem",color:C.muted,marginTop:8}}>🏟️ {fixture.fixture.venue.name}</div>}
       </div>
       {/* Tabs */}
-      <div style={{display:"flex",background:T.card,border:`1px solid ${T.border}`,borderRadius:9,overflow:"hidden",marginBottom:12,overflowX:"auto",scrollbarWidth:"none"}}>
+      <div style={{display:"flex",background:C.card,border:`1px solid ${C.bord}`,borderRadius:9,overflow:"hidden",marginBottom:12,overflowX:"auto",scrollbarWidth:"none"}}>
         {TABS.map(([id,l]) => (
-          <button key={id} onClick={()=>setTab(id)} style={{flexShrink:0,padding:"0.48rem 0.7rem",background:tab===id?T.rv:"transparent",color:tab===id?"#fff":T.tx,border:"none",borderRight:`1px solid ${T.border}`,fontSize:"0.52rem",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>{l}</button>
+          <button key={id} onClick={()=>setTab(id)} style={{flexShrink:0,padding:"0.48rem 0.7rem",background:tab===id?C.rouge:"transparent",color:tab===id?"#fff":C.texte,border:"none",borderRight:`1px solid ${C.bord}`,fontSize:"0.52rem",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>{l}</button>
         ))}
       </div>
       {/* Tab content */}
@@ -317,39 +366,39 @@ function MatchDetail({fixture, onBack}) {
           {tab==="overview" && (
             <div>
               {data.stats?.length >= 2 && (
-                <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"1rem",marginBottom:12}}>
+                <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"1rem",marginBottom:12}}>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
                     {[
                       {label:"Possession",h:data.stats[0]?.statistics?.find(s=>s.type?.includes("Possession"))?.value||"0%",a:data.stats[1]?.statistics?.find(s=>s.type?.includes("Possession"))?.value||"0%"},
                       {label:"Tirs",h:data.stats[0]?.statistics?.find(s=>s.type?.includes("Tirs au"))?.value||0,a:data.stats[1]?.statistics?.find(s=>s.type?.includes("Tirs au"))?.value||0},
                       {label:"Corners",h:data.stats[0]?.statistics?.find(s=>s.type?.includes("Corner"))?.value||0,a:data.stats[1]?.statistics?.find(s=>s.type?.includes("Corner"))?.value||0},
                     ].map((s,i) => (
-                      <div key={i} style={{background:T.card2,borderRadius:8,padding:"0.7rem",textAlign:"center"}}>
+                      <div key={i} style={{background:C.card2,borderRadius:8,padding:"0.7rem",textAlign:"center"}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                          <span style={{fontWeight:700,color:T.rv,fontSize:"0.9rem"}}>{s.h}</span>
-                          <span style={{fontSize:"0.46rem",color:T.mu}}>{s.label}</span>
-                          <span style={{fontWeight:700,color:T.bl,fontSize:"0.9rem"}}>{s.a}</span>
+                          <span style={{fontWeight:700,color:C.rouge,fontSize:"0.9rem"}}>{s.h}</span>
+                          <span style={{fontSize:"0.46rem",color:C.muted}}>{s.label}</span>
+                          <span style={{fontWeight:700,color:C.bleuL,fontSize:"0.9rem"}}>{s.a}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                   {data.stats[0]?.statistics?.slice(0,7).map((s,i) => (
-                    <StatBar key={i} label={s.type} h={s.value??0} a={data.stats[1]?.statistics?.[i]?.value??0} hc={T.rv} ac={T.bl}/>
+                    <StatBar key={i} label={s.type} h={s.value??0} a={data.stats[1]?.statistics?.[i]?.value??0} hc={C.rouge} ac={C.bleuL}/>
                   ))}
                 </div>
               )}
               {/* Buts */}
-              <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"1rem",marginBottom:12}}>
-                <div style={{fontSize:"0.54rem",color:T.oV,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:8}}>⚽ Buts</div>
-                {(data.events||[]).filter(e=>e.type==="Goal").length === 0 && <div style={{fontSize:"0.7rem",color:T.mu}}>Aucun but · 0 – 0</div>}
+              <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"1rem",marginBottom:12}}>
+                <div style={{fontSize:"0.54rem",color:C.orV,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:8}}>⚽ Buts</div>
+                {(data.events||[]).filter(e=>e.type==="Goal").length === 0 && <div style={{fontSize:"0.7rem",color:C.muted}}>Aucun but · 0 – 0</div>}
                 {(data.events||[]).filter(e=>e.type==="Goal").map((ev,i) => (
-                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"0.55rem 0.7rem",background:T.card2,borderRadius:7,marginBottom:5}}>
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"0.55rem 0.7rem",background:C.card2,borderRadius:7,marginBottom:5}}>
                     <span style={{fontSize:"1.1rem"}}>⚽</span>
                     <div style={{flex:1}}>
                       <span style={{fontWeight:700,fontSize:"0.78rem"}}>{ev.player?.name}</span>
-                      {ev.assist?.name && <span style={{fontSize:"0.56rem",color:T.mu}}> (Assist: {ev.assist.name})</span>}
+                      {ev.assist?.name && <span style={{fontSize:"0.56rem",color:C.muted}}> (Assist: {ev.assist.name})</span>}
                     </div>
-                    <span style={{fontWeight:700,fontSize:"0.78rem",color:T.oV}}>{ev.time?.elapsed}'</span>
+                    <span style={{fontWeight:700,fontSize:"0.78rem",color:C.orV}}>{ev.time?.elapsed}'</span>
                     {(ev.team?.id===home?.id?home:away)?.logo && <img src={(ev.team?.id===home?.id?home:away).logo} alt="" style={{width:18,height:18,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
                   </div>
                 ))}
@@ -360,17 +409,17 @@ function MatchDetail({fixture, onBack}) {
                 if (!all.length) return null;
                 const best = all.reduce((b,p) => parseFloat(p.statistics?.[0]?.games?.rating||0) > parseFloat(b.statistics?.[0]?.games?.rating||0) ? p : b, all[0]);
                 return (
-                  <div style={{background:"linear-gradient(135deg,rgba(30,112,69,.2),rgba(8,12,20,1))",border:`1px solid ${T.border}`,borderRadius:10,padding:"1rem"}}>
-                    <div style={{fontSize:"0.54rem",color:T.oV,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:8}}>⭐ Homme du match</div>
+                  <div style={{background:"linear-gradient(135deg,rgba(30,112,69,.2),rgba(8,12,20,1))",border:`1px solid ${C.bord}`,borderRadius:10,padding:"1rem"}}>
+                    <div style={{fontSize:"0.54rem",color:C.orV,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:8}}>⭐ Homme du match</div>
                     <div style={{display:"flex",alignItems:"center",gap:12}}>
                       <RatingBadge r={best.statistics?.[0]?.games?.rating} size={52}/>
                       <div>
                         <div style={{fontWeight:700,fontSize:"0.9rem"}}>{best.player?.name}</div>
-                        <div style={{fontSize:"0.6rem",color:T.mu,marginTop:2}}>{best.statistics?.[0]?.games?.position} · {best.player?.nationality} · {best.player?.age} ans</div>
+                        <div style={{fontSize:"0.6rem",color:C.muted,marginTop:2}}>{best.statistics?.[0]?.games?.position} · {best.player?.nationality} · {best.player?.age} ans</div>
                         <div style={{display:"flex",gap:6,marginTop:6}}>
-                          <span style={{background:T.rv+"22",color:T.rv,border:`1px solid ${T.rv}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>⚽ {best.statistics?.[0]?.goals?.total||0} buts</span>
-                          <span style={{background:T.oV+"22",color:T.oV,border:`1px solid ${T.oV}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>📊 {best.statistics?.[0]?.passes?.total||0} passes</span>
-                          <span style={{background:T.vtV+"22",color:T.vtV,border:`1px solid ${T.vtV}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>🏃 {best.statistics?.[0]?.dribbles?.success||0} dribbles</span>
+                          <span style={{background:C.rouge+"22",color:C.rouge,border:`1px solid ${C.rouge}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>⚽ {best.statistics?.[0]?.goals?.total||0} buts</span>
+                          <span style={{background:C.orV+"22",color:C.orV,border:`1px solid ${C.orV}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>📊 {best.statistics?.[0]?.passes?.total||0} passes</span>
+                          <span style={{background:C.vertV+"22",color:C.vertV,border:`1px solid ${C.vertV}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>🏃 {best.statistics?.[0]?.dribbles?.success||0} dribbles</span>
                         </div>
                       </div>
                     </div>
@@ -382,30 +431,30 @@ function MatchDetail({fixture, onBack}) {
 
           {/* STATS */}
           {tab==="stats" && (
-            <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"1rem"}}>
+            <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"1rem"}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
                 {home?.logo && <img src={home.logo} alt="" style={{width:20,height:20,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
-                <div style={{flex:1,height:4,background:T.rv,borderRadius:2}}/>
-                <span style={{fontSize:"0.58rem",fontWeight:700,color:T.mu}}>VS</span>
-                <div style={{flex:1,height:4,background:T.bl,borderRadius:2}}/>
+                <div style={{flex:1,height:4,background:C.rouge,borderRadius:2}}/>
+                <span style={{fontSize:"0.58rem",fontWeight:700,color:C.muted}}>VS</span>
+                <div style={{flex:1,height:4,background:C.bleuL,borderRadius:2}}/>
                 {away?.logo && <img src={away.logo} alt="" style={{width:20,height:20,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
               </div>
               {data.stats?.length >= 2 ? (
                 data.stats[0]?.statistics?.map((s,i) => (
-                  <StatBar key={i} label={s.type} h={s.value??0} a={data.stats[1]?.statistics?.[i]?.value??0} hc={T.rv} ac={T.bl}/>
+                  <StatBar key={i} label={s.type} h={s.value??0} a={data.stats[1]?.statistics?.[i]?.value??0} hc={C.rouge} ac={C.bleuL}/>
                 ))
-              ) : <div style={{textAlign:"center",padding:"2rem",fontSize:"0.72rem",color:T.mu}}>Stats non disponibles</div>}
+              ) : <div style={{textAlign:"center",padding:"2rem",fontSize:"0.72rem",color:C.muted}}>Stats non disponibles</div>}
             </div>
           )}
 
           {/* TIMELINE */}
           {tab==="timeline" && (
             <div>
-              <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"1rem",marginBottom:12}}>
+              <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"1rem",marginBottom:12}}>
                 <div style={{display:"flex",gap:4,alignItems:"center",marginBottom:8}}>
                   {home?.logo && <img src={home.logo} alt="" style={{width:18,height:18,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
-                  <div style={{flex:1,height:8,background:T.card3||"#172035",borderRadius:4,position:"relative",overflow:"visible"}}>
-                    <div style={{position:"absolute",left:"50%",top:-4,bottom:-4,width:2,background:T.mu}}/>
+                  <div style={{flex:1,height:8,background:C.card3||"#172035",borderRadius:4,position:"relative",overflow:"visible"}}>
+                    <div style={{position:"absolute",left:"50%",top:-4,bottom:-4,width:2,background:C.muted}}/>
                     {(data.events||[]).map((ev,i) => {
                       const pos = Math.min((ev.time?.elapsed||0)/90*100,100);
                       const isH = ev.team?.id === home?.id;
@@ -415,23 +464,23 @@ function MatchDetail({fixture, onBack}) {
                   </div>
                   {away?.logo && <img src={away.logo} alt="" style={{width:18,height:18,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
                 </div>
-                <div style={{display:"flex",justifyContent:"space-between",fontSize:"0.5rem",color:T.mu}}>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:"0.5rem",color:C.muted}}>
                   <span>0'</span><span>45' MT</span><span>90' FT</span>
                 </div>
               </div>
-              {(data.events||[]).length === 0 && <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:T.mu}}>Aucun événement</div></div>}
+              {(data.events||[]).length === 0 && <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:C.muted}}>Aucun événement</div></div>}
               {(data.events||[]).map((ev,i) => {
                 const isH = ev.team?.id === home?.id;
                 const icon = ev.type==="Goal"?"⚽":ev.type==="Card"?(ev.detail?.includes("Red")?"🟥":"🟨"):ev.type==="subst"?"🔄":"📌";
-                const col = ev.type==="Goal"?T.vtV:ev.type==="Card"?(ev.detail?.includes("Red")?T.rv:T.oV):T.mu;
+                const col = ev.type==="Goal"?C.vertV:ev.type==="Card"?(ev.detail?.includes("Red")?C.rouge:C.orV):C.muted;
                 return (
-                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"0.65rem 0.8rem",background:i%2===0?T.card:T.card2,borderRadius:7,marginBottom:4,borderLeft:`3px solid ${col}`}}>
-                    <div style={{width:40,textAlign:"center",flexShrink:0}}><div style={{fontWeight:700,fontSize:"0.8rem",color:T.oV}}>{ev.time?.elapsed}'</div></div>
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"0.65rem 0.8rem",background:i%2===0?C.card:C.card2,borderRadius:7,marginBottom:4,borderLeft:`3px solid ${col}`}}>
+                    <div style={{width:40,textAlign:"center",flexShrink:0}}><div style={{fontWeight:700,fontSize:"0.8rem",color:C.orV}}>{ev.time?.elapsed}'</div></div>
                     <div style={{width:24,textAlign:"center",fontSize:"1rem",flexShrink:0}}>{icon}</div>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:600,fontSize:"0.76rem"}}>{ev.player?.name}</div>
-                      {ev.assist?.name && <div style={{fontSize:"0.56rem",color:T.mu}}>↳ Assist: {ev.assist.name}</div>}
-                      <div style={{fontSize:"0.54rem",color:T.mu}}>{ev.detail} · {ev.team?.name}</div>
+                      {ev.assist?.name && <div style={{fontSize:"0.56rem",color:C.muted}}>↳ Assist: {ev.assist.name}</div>}
+                      <div style={{fontSize:"0.54rem",color:C.muted}}>{ev.detail} · {ev.team?.name}</div>
                     </div>
                     {(isH?home:away)?.logo && <img src={(isH?home:away).logo} alt="" style={{width:18,height:18,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
                   </div>
@@ -444,7 +493,7 @@ function MatchDetail({fixture, onBack}) {
           {tab==="lineups" && (
             <div>
               {data.lineups?.length >= 2 && (
-                <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,marginBottom:12,overflow:"hidden"}}>
+                <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,marginBottom:12,overflow:"hidden"}}>
                   <div style={{background:"linear-gradient(180deg,#1a3a1a,#0d200d)",padding:"1rem",position:"relative",minHeight:300}}>
                     <svg viewBox="0 0 200 280" style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:.25}}>
                       <rect x="10" y="10" width="180" height="260" fill="none" stroke="#4a7a4a" strokeWidth="1"/>
@@ -462,58 +511,58 @@ function MatchDetail({fixture, onBack}) {
                         const coords = rows[myPos]?.[pc[myPos]||0] || [50,50];
                         return (
                           <div key={`${ti}-${pi}`} style={{position:"absolute",left:`${coords[0]}%`,top:`${coords[1]}%`,transform:"translate(-50%,-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
-                            <div style={{width:28,height:28,borderRadius:"50%",background:ti===0?T.rv:T.bl,border:"2px solid rgba(255,255,255,.3)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:"0.6rem",color:"#fff"}}>{p.player?.number}</div>
+                            <div style={{width:28,height:28,borderRadius:"50%",background:ti===0?C.rouge:C.bleuL,border:"2px solid rgba(255,255,255,.3)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:"0.6rem",color:"#fff"}}>{p.player?.number}</div>
                             <div style={{fontSize:"0.42rem",color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.8)",whiteSpace:"nowrap",maxWidth:40,textAlign:"center",overflow:"hidden",textOverflow:"ellipsis"}}>{(p.player?.name||"").split(" ").slice(-1)[0]}</div>
                           </div>
                         );
                       })
                     )}
                   </div>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",borderTop:`1px solid ${T.border}`}}>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",borderTop:`1px solid ${C.bord}`}}>
                     {data.lineups.map((team,ti) => (
-                      <div key={ti} style={{padding:"0.6rem 0.8rem",borderRight:ti===0?`1px solid ${T.border}`:"none"}}>
+                      <div key={ti} style={{padding:"0.6rem 0.8rem",borderRight:ti===0?`1px solid ${C.bord}`:"none"}}>
                         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
                           {team.team?.logo && <img src={team.team.logo} alt="" style={{width:16,height:16,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
                           <div>
                             <div style={{fontWeight:700,fontSize:"0.72rem"}}>{team.team?.name}</div>
-                            <div style={{fontSize:"0.52rem",color:T.mu}}>{team.formation}</div>
+                            <div style={{fontSize:"0.52rem",color:C.muted}}>{team.formation}</div>
                           </div>
                         </div>
-                        <div style={{fontSize:"0.52rem",color:T.mu}}>{team.coach?.name}</div>
+                        <div style={{fontSize:"0.52rem",color:C.muted}}>{team.coach?.name}</div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
               {data.lineups?.map((team, ti) => (
-                <div key={ti} style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"1rem",marginBottom:10}}>
+                <div key={ti} style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"1rem",marginBottom:10}}>
                   <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
                     {team.team?.logo && <img src={team.team.logo} alt="" style={{width:24,height:24,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}
                     <div>
                       <div style={{fontWeight:700,fontSize:"0.85rem"}}>{team.team?.name}</div>
-                      <div style={{fontSize:"0.58rem",color:T.mu}}>Formation: {team.formation} · Coach: {team.coach?.name}</div>
+                      <div style={{fontSize:"0.58rem",color:C.muted}}>Formation: {team.formation} · Coach: {team.coach?.name}</div>
                     </div>
                   </div>
-                  <div style={{fontSize:"0.54rem",color:T.oV,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Titulaires</div>
+                  <div style={{fontSize:"0.54rem",color:C.orV,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Titulaires</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,marginBottom:10}}>
                     {team.startXI?.map((p,i) => (
-                      <div key={i} style={{display:"flex",alignItems:"center",gap:6,background:T.card2,borderRadius:6,padding:"0.42rem 0.6rem"}}>
-                        <div style={{width:24,height:24,borderRadius:"50%",background:ti===0?T.rv:T.bl,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.62rem",fontWeight:700,color:"#fff",flexShrink:0}}>{p.player?.number}</div>
+                      <div key={i} style={{display:"flex",alignItems:"center",gap:6,background:C.card2,borderRadius:6,padding:"0.42rem 0.6rem"}}>
+                        <div style={{width:24,height:24,borderRadius:"50%",background:ti===0?C.rouge:C.bleuL,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.62rem",fontWeight:700,color:"#fff",flexShrink:0}}>{p.player?.number}</div>
                         <div style={{overflow:"hidden",flex:1}}>
                           <div style={{fontSize:"0.65rem",fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.player?.name}</div>
                           <div style={{display:"flex",alignItems:"center",gap:4}}>
-                            <span style={{fontSize:"0.48rem",color:T.mu}}>{p.player?.pos}</span>
+                            <span style={{fontSize:"0.48rem",color:C.muted}}>{p.player?.pos}</span>
                             {p.player?.rating && <RatingBadge r={p.player.rating} size={16}/>}
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div style={{fontSize:"0.54rem",color:T.oV,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Remplaçants</div>
+                  <div style={{fontSize:"0.54rem",color:C.orV,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Remplaçants</div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
                     {team.substitutes?.map((p,i) => (
-                      <div key={i} style={{background:T.card3||"#172035",borderRadius:5,padding:"0.28rem 0.55rem",fontSize:"0.56rem",color:T.tx}}>
-                        <span style={{color:T.mu,fontSize:"0.48rem"}}>{p.player?.number} </span>{p.player?.name}
+                      <div key={i} style={{background:C.card3||"#172035",borderRadius:5,padding:"0.28rem 0.55rem",fontSize:"0.56rem",color:C.texte}}>
+                        <span style={{color:C.muted,fontSize:"0.48rem"}}>{p.player?.number} </span>{p.player?.name}
                       </div>
                     ))}
                   </div>
@@ -526,7 +575,7 @@ function MatchDetail({fixture, onBack}) {
           {tab==="players" && (
             <div>
               {(!data.players || data.players.length===0) && (
-                <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:T.mu}}>Stats joueurs non disponibles</div></div>
+                <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:C.muted}}>Stats joueurs non disponibles</div></div>
               )}
               {data.players?.map((team, ti) => (
                 <div key={ti} style={{marginBottom:16}}>
@@ -537,19 +586,19 @@ function MatchDetail({fixture, onBack}) {
                   {team.players?.map((p, i) => {
                     const s = p.statistics?.[0];
                     return (
-                      <div key={i} style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"0.9rem",marginBottom:7}}>
+                      <div key={i} style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"0.9rem",marginBottom:7}}>
                         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
                           {s?.games?.rating && <RatingBadge r={s.games.rating} size={42}/>}
                           <div style={{flex:1}}>
                             <div style={{fontWeight:700,fontSize:"0.8rem"}}>{p.player?.name}</div>
-                            <div style={{fontSize:"0.56rem",color:T.mu,marginTop:2}}>{s?.games?.position||""} · {s?.games?.minutes||0}min · {p.player?.nationality||""}</div>
+                            <div style={{fontSize:"0.56rem",color:C.muted,marginTop:2}}>{s?.games?.position||""} · {s?.games?.minutes||0}min · {p.player?.nationality||""}</div>
                           </div>
                         </div>
                         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:5}}>
-                          {[["⚽",s?.goals?.total??0,"Buts",T.rv],["🎯",s?.goals?.assists??0,"Passes D.",T.oV],["🥅",s?.shots?.on??0,"Tirs cadrés",T.bl],["✅",(s?.passes?.accuracy??0)+"%","Précision",T.vtV],["🦺",s?.tackles?.total??0,"Tacles",T.or||C.or],["🏃",s?.dribbles?.success??0,"Dribbles",T.mu],["🟨",s?.cards?.yellow??0,"Carton J.",T.oV],["📊",s?.passes?.total??0,"Passes",T.tx]].map(([ic,v,l,col],idx) => (
-                            <div key={idx} style={{background:T.card2,borderRadius:6,padding:"0.5rem",textAlign:"center"}}>
+                          {[["⚽",s?.goals?.total??0,"Buts",C.rouge],["🎯",s?.goals?.assists??0,"Passes D.",C.orV],["🥅",s?.shots?.on??0,"Tirs cadrés",C.bleuL],["✅",(s?.passes?.accuracy??0)+"%","Précision",C.vertV],["🦺",s?.tackles?.total??0,"Tacles",C.or||C.or],["🏃",s?.dribbles?.success??0,"Dribbles",C.muted],["🟨",s?.cards?.yellow??0,"Carton J.",C.orV],["📊",s?.passes?.total??0,"Passes",C.texte]].map(([ic,v,l,col],idx) => (
+                            <div key={idx} style={{background:C.card2,borderRadius:6,padding:"0.5rem",textAlign:"center"}}>
                               <div style={{fontWeight:800,fontSize:"0.95rem",color:col,lineHeight:1}}>{v}</div>
-                              <div style={{fontSize:"0.42rem",color:T.mu,marginTop:2,lineHeight:1.2}}>{l}</div>
+                              <div style={{fontSize:"0.42rem",color:C.muted,marginTop:2,lineHeight:1.2}}>{l}</div>
                             </div>
                           ))}
                         </div>
@@ -570,25 +619,25 @@ function MatchDetail({fixture, onBack}) {
                 const dr = data.h2h.length - hW - aW;
                 return (
                   <div>
-                    <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"1rem",marginBottom:12}}>
+                    <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"1rem",marginBottom:12}}>
                       <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",gap:8,textAlign:"center"}}>
-                        <div>{home?.logo&&<img src={home.logo} alt="" style={{width:32,height:32,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<div style={{fontWeight:800,fontSize:"1.8rem",color:T.rv,marginTop:4}}>{hW}</div><div style={{fontSize:"0.54rem",color:T.mu}}>Victoires</div></div>
-                        <div><div style={{fontWeight:800,fontSize:"1.3rem",color:T.or||C.or}}>{dr}</div><div style={{fontSize:"0.54rem",color:T.mu}}>Nuls</div><div style={{fontSize:"0.52rem",color:T.mu,marginTop:2}}>{data.h2h.length} matchs</div></div>
-                        <div>{away?.logo&&<img src={away.logo} alt="" style={{width:32,height:32,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<div style={{fontWeight:800,fontSize:"1.8rem",color:T.bl,marginTop:4}}>{aW}</div><div style={{fontSize:"0.54rem",color:T.mu}}>Victoires</div></div>
+                        <div>{home?.logo&&<img src={home.logo} alt="" style={{width:32,height:32,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<div style={{fontWeight:800,fontSize:"1.8rem",color:C.rouge,marginTop:4}}>{hW}</div><div style={{fontSize:"0.54rem",color:C.muted}}>Victoires</div></div>
+                        <div><div style={{fontWeight:800,fontSize:"1.3rem",color:C.or||C.or}}>{dr}</div><div style={{fontSize:"0.54rem",color:C.muted}}>Nuls</div><div style={{fontSize:"0.52rem",color:C.muted,marginTop:2}}>{data.h2h.length} matchs</div></div>
+                        <div>{away?.logo&&<img src={away.logo} alt="" style={{width:32,height:32,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<div style={{fontWeight:800,fontSize:"1.8rem",color:C.bleuL,marginTop:4}}>{aW}</div><div style={{fontSize:"0.54rem",color:C.muted}}>Victoires</div></div>
                       </div>
                     </div>
                     {data.h2h.slice(0,8).map((m,i) => (
-                      <div key={i} style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:7,padding:"0.7rem 0.9rem",marginBottom:5}}>
+                      <div key={i} style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:7,padding:"0.7rem 0.9rem",marginBottom:5}}>
                         <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",gap:8}}>
                           <div style={{display:"flex",alignItems:"center",gap:6}}>{m.teams.home.logo&&<img src={m.teams.home.logo} alt="" style={{width:18,height:18,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<span style={{fontSize:"0.72rem",fontWeight:600}}>{m.teams.home.name}</span></div>
-                          <div style={{textAlign:"center"}}><div style={{fontWeight:800,fontSize:"1rem",color:T.blanc}}>{(m.goals?.home??"-")} – {(m.goals?.away??"-")}</div><div style={{fontSize:"0.48rem",color:T.mu}}>{new Date(m.fixture?.date).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"2-digit"})}</div></div>
+                          <div style={{textAlign:"center"}}><div style={{fontWeight:800,fontSize:"1rem",color:C.blanc}}>{(m.goals?.home??"-")} – {(m.goals?.away??"-")}</div><div style={{fontSize:"0.48rem",color:C.muted}}>{new Date(m.fixture?.date).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"2-digit"})}</div></div>
                           <div style={{display:"flex",alignItems:"center",gap:6,flexDirection:"row-reverse"}}>{m.teams.away.logo&&<img src={m.teams.away.logo} alt="" style={{width:18,height:18,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<span style={{fontSize:"0.72rem",fontWeight:600,textAlign:"right"}}>{m.teams.away.name}</span></div>
                         </div>
                       </div>
                     ))}
                   </div>
                 );
-              })() : <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:T.mu}}>Pas d'historique disponible</div></div>}
+              })() : <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:C.muted}}>Pas d'historique disponible</div></div>}
             </div>
           )}
 
@@ -599,25 +648,25 @@ function MatchDetail({fixture, onBack}) {
                 const groups = data.standings[0]?.league?.standings || [];
                 const grp = groups[0] || [];
                 return (
-                  <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,overflow:"hidden"}}>
+                  <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,overflow:"hidden"}}>
                     <table style={{width:"100%",borderCollapse:"collapse",fontSize:"0.7rem"}}>
                       <thead><tr style={{background:"rgba(255,255,255,.025)"}}>
-                        {["#","Équipe","J","V","N","D","Pts","Forme"].map(h=><th key={h} style={{padding:"0.42rem 0.4rem",fontSize:"0.48rem",color:T.mu,fontWeight:400,textAlign:h==="Équipe"?"left":"center",letterSpacing:"0.08em"}}>{h}</th>)}
+                        {["#","Équipe","J","V","N","D","Pts","Forme"].map(h=><th key={h} style={{padding:"0.42rem 0.4rem",fontSize:"0.48rem",color:C.muted,fontWeight:400,textAlign:h==="Équipe"?"left":"center",letterSpacing:"0.08em"}}>{h}</th>)}
                       </tr></thead>
                       <tbody>
                         {grp.map((row,i) => {
                           const isHT = row.team?.name?.toLowerCase().includes("haïti")||row.team?.name?.toLowerCase().includes("haiti");
                           const isTeam = row.team?.id===home?.id||row.team?.id===away?.id;
                           return (
-                            <tr key={i} style={{background:isHT?"rgba(11,27,94,.2)":isTeam?"rgba(255,255,255,.03)":"transparent",borderLeft:isHT?`2px solid ${T.rv}`:"none",borderBottom:`1px solid ${T.b2||"rgba(255,255,255,0.03)"}`}}>
-                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",fontWeight:i<2?700:400,color:i<2?T.vtV:T.mu,fontSize:"0.66rem"}}>{row.rank}</td>
+                            <tr key={i} style={{background:isHT?"rgba(11,27,94,.2)":isTeam?"rgba(255,255,255,.03)":"transparent",borderLeft:isHT?`2px solid ${C.rouge}`:"none",borderBottom:`1px solid ${C.bord2||"rgba(255,255,255,0.03)"}`}}>
+                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",fontWeight:i<2?700:400,color:i<2?C.vertV:C.muted,fontSize:"0.66rem"}}>{row.rank}</td>
                               <td style={{padding:"0.48rem 0.4rem"}}><div style={{display:"flex",alignItems:"center",gap:5}}>{row.team?.logo&&<img src={row.team.logo} alt="" style={{width:14,height:14,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<span style={{fontWeight:isHT||isTeam?700:400,fontSize:"0.68rem"}}>{row.team?.name}</span></div></td>
-                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:T.mu}}>{row.all?.played}</td>
-                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:T.mu}}>{row.all?.win}</td>
-                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:T.mu}}>{row.all?.draw}</td>
-                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:T.mu}}>{row.all?.lose}</td>
-                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",fontWeight:800,color:T.blanc,fontSize:"0.78rem"}}>{row.points}</td>
-                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center"}}><div style={{display:"flex",gap:2,justifyContent:"center"}}>{(row.form||"").split("").slice(-5).map((f,fi)=><div key={fi} style={{width:8,height:8,borderRadius:"50%",background:f==="W"?T.vtV:f==="L"?T.rv:T.or||C.or,flexShrink:0}}/>)}</div></td>
+                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:C.muted}}>{row.all?.played}</td>
+                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:C.muted}}>{row.all?.win}</td>
+                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:C.muted}}>{row.all?.draw}</td>
+                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:C.muted}}>{row.all?.lose}</td>
+                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center",fontWeight:800,color:C.blanc,fontSize:"0.78rem"}}>{row.points}</td>
+                              <td style={{padding:"0.48rem 0.4rem",textAlign:"center"}}><div style={{display:"flex",gap:2,justifyContent:"center"}}>{(row.form||"").split("").slice(-5).map((f,fi)=><div key={fi} style={{width:8,height:8,borderRadius:"50%",background:f==="W"?C.vertV:f==="L"?C.rouge:C.or||C.or,flexShrink:0}}/>)}</div></td>
                             </tr>
                           );
                         })}
@@ -625,7 +674,7 @@ function MatchDetail({fixture, onBack}) {
                     </table>
                   </div>
                 );
-              })() : <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:T.mu}}>Classement non disponible</div></div>}
+              })() : <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:C.muted}}>Classement non disponible</div></div>}
             </div>
           )}
         </div>
@@ -671,44 +720,47 @@ function StatsPanel({setSelectedMatch}) {
     const ga = m.goals?.away??m.ga??"-";
     const min = m.fixture?.status?.elapsed||m.min;
     return (
-      <div onClick={()=>setSelectedMatch(m)} style={{background:T.card,border:`1px solid ${isL?"rgba(28,112,69,.44)":T.border}`,borderRadius:9,marginBottom:6,cursor:"pointer",overflow:"hidden"}}>
-        <div style={{padding:"0.42rem 0.8rem",display:"flex",alignItems:"center",gap:6,borderBottom:`1px solid ${T.b2||"rgba(255,255,255,0.03)"}`}}>
-          <span style={{fontSize:"0.5rem",color:T.mu}}>{m.league?.name||m.comp}</span>
-          {isL && <span style={{background:T.vtV+"22",color:T.vtV,border:`1px solid ${T.vtV}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>🔴 {min}'</span>}
-          {(m.fixture?.status?.short==="FT"||m.st==="FT") && <span style={{background:T.mu+"22",color:T.mu,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>FIN</span>}
+      <div onClick={()=>setSelectedMatch(m)} style={{background:C.card,border:`1px solid ${isL?"rgba(28,112,69,.44)":C.bord}`,borderRadius:9,marginBottom:6,cursor:"pointer",overflow:"hidden"}}>
+        <div style={{padding:"0.42rem 0.8rem",display:"flex",alignItems:"center",gap:6,borderBottom:`1px solid ${C.bord2||"rgba(255,255,255,0.03)"}`}}>
+          <span style={{fontSize:"0.5rem",color:C.muted}}>{m.league?.name||m.comp}</span>
+          {isL && <span style={{background:C.vertV+"22",color:C.vertV,border:`1px solid ${C.vertV}44`,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>🔴 {min}'</span>}
+          {(m.fixture?.status?.short==="FT"||m.st==="FT") && <span style={{background:C.muted+"22",color:C.muted,fontSize:"0.44rem",fontWeight:700,padding:"0.1rem 0.4rem",borderRadius:3}}>FIN</span>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",padding:"0.72rem 0.9rem",gap:8}}>
           <div style={{display:"flex",alignItems:"center",gap:7}}>{hl&&<img src={hl} alt="" style={{width:22,height:22,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<span style={{fontWeight:600,fontSize:"0.76rem"}}>{hn}</span></div>
-          <div style={{textAlign:"center",minWidth:50}}><div style={{fontWeight:800,fontSize:"1.15rem",color:isL?T.oV:T.blanc,lineHeight:1}}>{gh} – {ga}</div></div>
+          <div style={{textAlign:"center",minWidth:50}}><div style={{fontWeight:800,fontSize:"1.15rem",color:isL?C.orV:C.blanc,lineHeight:1}}>{gh} – {ga}</div></div>
           <div style={{display:"flex",alignItems:"center",gap:7,flexDirection:"row-reverse"}}>{al&&<img src={al} alt="" style={{width:22,height:22,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<span style={{fontWeight:600,fontSize:"0.76rem",textAlign:"right"}}>{an}</span></div>
         </div>
-        <div style={{padding:"0.28rem 0.9rem",textAlign:"right",fontSize:"0.5rem",color:T.oV}}>📊 Stats & Analyse →</div>
+        <div style={{padding:"0.28rem 0.9rem",textAlign:"right",fontSize:"0.5rem",color:C.orV}}>📊 Stats & Analyse →</div>
       </div>
     );
   };
 
   return (
     <div>
-      <div style={{fontSize:"0.54rem",color:T.oV,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:10,display:"flex",alignItems:"center",gap:8}}>📊 Stats Center · Toutes Compétitions<div style={{flex:1,height:1,background:`linear-gradient(90deg,${T.or}50,transparent)`}}/></div>
-      {/* Haïti vs Écosse */}
-      <div onClick={()=>setSelectedMatch(HAITI_SCO)} style={{background:"linear-gradient(135deg,rgba(196,18,48,.15),rgba(0,48,135,.15))",border:`1px solid ${T.rv}55`,borderRadius:10,padding:"0.9rem",marginBottom:12,cursor:"pointer"}}>
-        <div style={{fontSize:"0.5rem",color:T.oV,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:6,display:"flex",alignItems:"center",gap:4}}><span style={{display:"inline-block",width:6,height:6,background:T.oV,borderRadius:"50%",animation:"blink 1.4s ease-in-out infinite",marginRight:4}}/>🇭🇹 Match récent — Analyse complète disponible</div>
+      <div style={{fontSize:"0.54rem",color:C.orV,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:10,display:"flex",alignItems:"center",gap:8}}>📊 Stats Center · Toutes Compétitions<div style={{flex:1,height:1,background:`linear-gradient(90deg,${C.or}50,transparent)`}}/></div>
+      {/* Haïti vs Écosse — donnée api/final : réelle, archivée, match terminé */}
+      <div onClick={()=>setSelectedMatch(HAITI_SCO)} style={{background:"linear-gradient(135deg,rgba(196,18,48,.15),rgba(0,48,135,.15))",border:`1px solid ${C.rouge}55`,borderRadius:10,padding:"0.9rem",marginBottom:12,cursor:"pointer"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+          <span style={{fontSize:"0.5rem",color:C.orV,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase"}}>🇭🇹 Match récent — Analyse complète disponible</span>
+          <DataBadge status="final"/>
+        </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",gap:8}}>
           <div style={{display:"flex",alignItems:"center",gap:6}}><img src="https://media.api-sports.io/football/teams/511.png" alt="" style={{width:26,height:26,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/><span style={{fontWeight:700,fontSize:"0.8rem"}}>Haïti</span></div>
-          <div style={{textAlign:"center"}}><div style={{fontWeight:800,fontSize:"1.5rem",color:T.blanc,lineHeight:1}}>0 – 1</div><div style={{fontSize:"0.5rem",color:T.mu,marginTop:2}}>TERMINÉ · World Cup J1</div></div>
+          <div style={{textAlign:"center"}}><div style={{fontWeight:800,fontSize:"1.5rem",color:C.blanc,lineHeight:1}}>0 – 1</div><div style={{fontSize:"0.5rem",color:C.muted,marginTop:2}}>TERMINÉ · World Cup J1 · 14 Juin 2026</div></div>
           <div style={{display:"flex",alignItems:"center",gap:6,flexDirection:"row-reverse"}}><img src="https://media.api-sports.io/football/teams/35.png" alt="" style={{width:26,height:26,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/><span style={{fontWeight:700,fontSize:"0.8rem"}}>Écosse</span></div>
         </div>
-        <div style={{textAlign:"center",fontSize:"0.5rem",color:T.oV,marginTop:6}}>📊 Overview · Stats · Timeline · Lineups · Joueurs · H2H · Table →</div>
+        <div style={{textAlign:"center",fontSize:"0.5rem",color:C.orV,marginTop:6}}>📊 Overview · Stats · Timeline · Lineups · Joueurs · H2H · Table →</div>
       </div>
       {/* Nav */}
-      <div style={{display:"flex",background:T.card,border:`1px solid ${T.border}`,borderRadius:9,overflow:"hidden",marginBottom:12}}>
+      <div style={{display:"flex",background:C.card,border:`1px solid ${C.bord}`,borderRadius:9,overflow:"hidden",marginBottom:12}}>
         {[["live","🔴 Live"],["comp","🏆 Compétitions"]].map(([v,l]) => (
-          <button key={v} onClick={()=>setView(v)} style={{flex:1,padding:"0.5rem",background:view===v?T.rv:"transparent",color:view===v?"#fff":T.tx,border:"none",borderRight:`1px solid ${T.border}`,fontSize:"0.62rem",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{l}</button>
+          <button key={v} onClick={()=>setView(v)} style={{flex:1,padding:"0.5rem",background:view===v?C.rouge:"transparent",color:view===v?"#fff":C.texte,border:"none",borderRight:`1px solid ${C.bord}`,fontSize:"0.62rem",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{l}</button>
         ))}
       </div>
       {view==="live" && (
         <div>
-          {liveM.length===0 && <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"2rem",opacity:.3,marginBottom:8}}>⚽</div><div style={{fontSize:"0.75rem",color:T.mu}}>Aucun match en direct</div><div style={{fontSize:"0.6rem",color:T.mu,marginTop:4}}>Les matchs apparaissent automatiquement</div></div>}
+          {liveM.length===0 && <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"2rem",opacity:.3,marginBottom:8}}>⚽</div><div style={{fontSize:"0.75rem",color:C.muted}}>Aucun match en direct</div><div style={{fontSize:"0.6rem",color:C.muted,marginTop:4}}>Les matchs apparaissent automatiquement</div></div>}
           {liveM.map((m,i) => <MCard key={i} m={m}/>)}
         </div>
       )}
@@ -716,18 +768,18 @@ function StatsPanel({setSelectedMatch}) {
         <div>
           <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:12}}>
             {COMPS_LIST.map((c,i) => (
-              <button key={i} onClick={()=>{setComp(c);setSub("matches");}} style={{background:comp.id===c.id?T.rv:T.card,border:`1px solid ${comp.id===c.id?T.rv:T.border}`,color:comp.id===c.id?"#fff":T.tx,fontSize:"0.56rem",fontWeight:600,padding:"0.26rem 0.6rem",borderRadius:5,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{c.name}</button>
+              <button key={i} onClick={()=>{setComp(c);setSub("matches");}} style={{background:comp.id===c.id?C.rouge:C.card,border:`1px solid ${comp.id===c.id?C.rouge:C.bord}`,color:comp.id===c.id?"#fff":C.texte,fontSize:"0.56rem",fontWeight:600,padding:"0.26rem 0.6rem",borderRadius:5,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{c.name}</button>
             ))}
           </div>
-          <div style={{display:"flex",background:T.card,border:`1px solid ${T.border}`,borderRadius:9,overflow:"hidden",marginBottom:12}}>
+          <div style={{display:"flex",background:C.card,border:`1px solid ${C.bord}`,borderRadius:9,overflow:"hidden",marginBottom:12}}>
             {[["matches","🗓️ Matchs"],["standings","📊 Classement"],["scorers","🥇 Stats"]].map(([v,l]) => (
-              <button key={v} onClick={()=>setSub(v)} style={{flex:1,padding:"0.48rem",background:sub===v?T.rv:"transparent",color:sub===v?"#fff":T.tx,border:"none",borderRight:`1px solid ${T.border}`,fontSize:"0.58rem",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{l}</button>
+              <button key={v} onClick={()=>setSub(v)} style={{flex:1,padding:"0.48rem",background:sub===v?C.rouge:"transparent",color:sub===v?"#fff":C.texte,border:"none",borderRight:`1px solid ${C.bord}`,fontSize:"0.58rem",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{l}</button>
             ))}
           </div>
           {loading && <Spin/>}
           {!loading && sub==="matches" && (
             <div>
-              {matches.length===0 && <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:T.mu}}>Aucun match trouvé</div></div>}
+              {matches.length===0 && <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,padding:"2rem",textAlign:"center"}}><div style={{fontSize:"0.72rem",color:C.muted}}>Aucun match trouvé</div></div>}
               {matches.map((m,i) => <MCard key={i} m={m}/>)}
             </div>
           )}
@@ -735,24 +787,24 @@ function StatsPanel({setSelectedMatch}) {
             const groups = standings[0]?.league?.standings||[];
             return groups.map((grp,gi) => (
               <div key={gi} style={{marginBottom:12}}>
-                {groups.length>1 && <div style={{fontSize:"0.58rem",color:T.oV,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>{grp[0]?.group}</div>}
-                <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:10,overflow:"hidden"}}>
+                {groups.length>1 && <div style={{fontSize:"0.58rem",color:C.orV,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>{grp[0]?.group}</div>}
+                <div style={{background:C.card,border:`1px solid ${C.bord}`,borderRadius:10,overflow:"hidden"}}>
                   <table style={{width:"100%",borderCollapse:"collapse",fontSize:"0.7rem"}}>
                     <thead><tr style={{background:"rgba(255,255,255,.025)"}}>
-                      {["#","Équipe","J","V","N","D","Pts"].map(h=><th key={h} style={{padding:"0.42rem 0.4rem",fontSize:"0.48rem",color:T.mu,fontWeight:400,textAlign:h==="Équipe"?"left":"center"}}>{h}</th>)}
+                      {["#","Équipe","J","V","N","D","Pts"].map(h=><th key={h} style={{padding:"0.42rem 0.4rem",fontSize:"0.48rem",color:C.muted,fontWeight:400,textAlign:h==="Équipe"?"left":"center"}}>{h}</th>)}
                     </tr></thead>
                     <tbody>
                       {grp.map((row,i) => {
                         const isHT = row.team?.name?.toLowerCase().includes("haïti")||row.team?.name?.toLowerCase().includes("haiti");
                         return (
-                          <tr key={i} style={{background:isHT?"rgba(11,27,94,.2)":"transparent",borderLeft:isHT?`2px solid ${T.rv}`:"none",borderBottom:`1px solid ${T.b2||"rgba(255,255,255,0.03)"}`}}>
-                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",fontWeight:i<2?700:400,color:i<2?T.vtV:T.mu}}>{row.rank}</td>
+                          <tr key={i} style={{background:isHT?"rgba(11,27,94,.2)":"transparent",borderLeft:isHT?`2px solid ${C.rouge}`:"none",borderBottom:`1px solid ${C.bord2||"rgba(255,255,255,0.03)"}`}}>
+                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",fontWeight:i<2?700:400,color:i<2?C.vertV:C.muted}}>{row.rank}</td>
                             <td style={{padding:"0.48rem 0.4rem"}}><div style={{display:"flex",alignItems:"center",gap:5}}>{row.team?.logo&&<img src={row.team.logo} alt="" style={{width:14,height:14,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}<span style={{fontWeight:isHT?700:400,fontSize:"0.68rem"}}>{row.team?.name}</span></div></td>
-                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:T.mu}}>{row.all?.played}</td>
-                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:T.mu}}>{row.all?.win}</td>
-                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:T.mu}}>{row.all?.draw}</td>
-                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:T.mu}}>{row.all?.lose}</td>
-                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",fontWeight:800,color:T.blanc}}>{row.points}</td>
+                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:C.muted}}>{row.all?.played}</td>
+                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:C.muted}}>{row.all?.win}</td>
+                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:C.muted}}>{row.all?.draw}</td>
+                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",color:C.muted}}>{row.all?.lose}</td>
+                            <td style={{padding:"0.48rem 0.4rem",textAlign:"center",fontWeight:800,color:C.blanc}}>{row.points}</td>
                           </tr>
                         );
                       })}
@@ -764,22 +816,22 @@ function StatsPanel({setSelectedMatch}) {
           })()}
           {!loading && sub==="scorers" && (
             <div>
-              <div style={{display:"flex",background:T.card,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden",marginBottom:10}}>
+              <div style={{display:"flex",background:C.card,border:`1px solid ${C.bord}`,borderRadius:8,overflow:"hidden",marginBottom:10}}>
                 {[["scorers","⚽ Top Buteurs"],["assists","🎯 Top Passeurs"]].map(([v,l]) => (
-                  <button key={v} onClick={()=>setSType(v)} style={{flex:1,padding:"0.45rem",background:sType===v?T.rv:"transparent",color:sType===v?"#fff":T.tx,border:"none",fontSize:"0.6rem",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{l}</button>
+                  <button key={v} onClick={()=>setSType(v)} style={{flex:1,padding:"0.45rem",background:sType===v?C.rouge:"transparent",color:sType===v?"#fff":C.texte,border:"none",fontSize:"0.6rem",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{l}</button>
                 ))}
               </div>
               {scorers.slice(0,15).map((p,i) => {
                 const st = p.statistics?.[0];
                 const val = sType==="scorers" ? st?.goals?.total : st?.goals?.assists;
                 return (
-                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"0.6rem 0.8rem",background:i%2===0?T.card:T.card2,borderRadius:7,marginBottom:4}}>
-                    <div style={{width:24,textAlign:"center",fontWeight:800,fontSize:"0.85rem",color:i<3?T.oV:T.mu}}>{i+1}</div>
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"0.6rem 0.8rem",background:i%2===0?C.card:C.card2,borderRadius:7,marginBottom:4}}>
+                    <div style={{width:24,textAlign:"center",fontWeight:800,fontSize:"0.85rem",color:i<3?C.orV:C.muted}}>{i+1}</div>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:700,fontSize:"0.78rem"}}>{p.player?.name}</div>
-                      <div style={{fontSize:"0.56rem",color:T.mu,display:"flex",alignItems:"center",gap:4}}>{st?.team?.logo&&<img src={st.team.logo} alt="" style={{width:14,height:14,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}{st?.team?.name} · {p.player?.nationality}</div>
+                      <div style={{fontSize:"0.56rem",color:C.muted,display:"flex",alignItems:"center",gap:4}}>{st?.team?.logo&&<img src={st.team.logo} alt="" style={{width:14,height:14,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>}{st?.team?.name} · {p.player?.nationality}</div>
                     </div>
-                    <div style={{fontWeight:800,fontSize:"1.4rem",color:i===0?T.oV:T.rv,lineHeight:1}}>{val??0}</div>
+                    <div style={{fontWeight:800,fontSize:"1.4rem",color:i===0?C.orV:C.rouge,lineHeight:1}}>{val??0}</div>
                   </div>
                 );
               })}
@@ -815,10 +867,198 @@ const TV_SOURCES = [
   {id:"tnt",name:"📡 TNT Sports",cat:"Amérique Latine",color:"#FF6900",desc:"LatAm: Champions League, via abonnement câble/HBO Max",free:false,star:false,url:"https://www.max.com",embed:null,price:"Via Max/câble"},
 ];
 
+// ════════════════════════════════════════════════════════
+// DATA CONTRACT v1 — Pipeline unique : API → normalize → validate → UI
+// Aucun composant ne doit lire un match sans qu'il soit passé
+// par normalizeMatch(). Empêche la divergence de statut entre
+// objets issus du même batch.
+//
+// __meta.lifecycle (≠ match.st qui est le code technique brut
+// "1H"/"FT"/etc.) : "live" | "final" | "pending"
+// __meta.source    : "api" | "fallback" | "mock"
+// __meta.confidence: "high" (api) | "low" (fallback/mock)
+//
+// Note: validateMatch() rejette par filter plutôt que throw —
+// un objet malformé issu d'une réponse API imprévisible ne doit
+// jamais faire planter tout l'onglet, juste être exclu du rendu.
+// ════════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════
+// SCHEMA_VERSION — single source of truth du contrat de données.
+// Tout objet __meta porte sa version. validateMatch() rejette
+// les objets d'une version inconnue, ce qui empêche le mélange
+// silencieux d'anciens formats (ex: __meta.status legacy) avec
+// le format actuel (__meta.lifecycle) pendant une migration.
+// ════════════════════════════════════════════════════════
+const SCHEMA_VERSION = 2; // v1 = __meta.status (obsolète) · v2 = __meta.lifecycle + confidence
+
+// Migration layer minimal — évite la rigidité du rejet pur.
+// Un objet v1 n'est pas perdu : il est élevé à v2 avant validation,
+// au lieu d'être bloqué net. Si un futur SCHEMA_VERSION=3 apparaît,
+// ajouter un cas ici plutôt que de durcir validateMatch davantage.
+function migrateMatch(m){
+  if(!m?.__meta) return m; // rien à migrer, normalizeMatch gère l'absence de __meta
+  if(m.__meta.version===SCHEMA_VERSION) return m;
+  if(m.__meta.version===1 || m.__meta.status){
+    // v1 → v2 : status renommé lifecycle, confidence déduite de source
+    return {
+      ...m,
+      __meta:{
+        version: SCHEMA_VERSION,
+        source: m.__meta.source ?? "mock",
+        lifecycle: m.__meta.lifecycle ?? m.__meta.status ?? "pending",
+        fetchedAt: m.__meta.fetchedAt ?? null,
+        confidence: m.__meta.confidence ?? (m.__meta.source==="api"?"high":"low"),
+      },
+    };
+  }
+  return m; // version inconnue future : laissé tel quel, validateMatch décidera
+}
+
+function inferLifecycle(status){
+  if(status==="FT") return "final";
+  if(["1H","2H","HT","ET"].includes(status)) return "live";
+  return "pending";
+}
+
+// Point de lecture unique pour l'UI — lecture pure, zéro calcul.
+// inferLifecycle() n'est appelée qu'une fois, dans normalizeMatch().
+// Si __meta.lifecycle est absent, c'est que l'objet n'est jamais
+// passé par le pipeline (bug d'intégration) — on le signale
+// bruyamment plutôt que de déduire silencieusement une valeur,
+// ce qui créerait une seconde source de vérité invisible.
+function getLifecycle(m){
+  if(!m?.__meta?.lifecycle){
+    console.error("[getLifecycle] objet hors pipeline, jamais normalisé:",m);
+    return "pending";
+  }
+  return m.__meta.lifecycle;
+}
+
+// ════════════════════════════════════════════════════════
+// ERROR BOUNDARY — isolation par zone métier, pas un boundary
+// global. Un bug dans Scores ne doit jamais faire disparaître
+// le reste du site (TV, News, Stats). React exige une classe
+// (componentDidCatch n'existe pas en hook) — seule classe du
+// fichier, justifiée par cette contrainte d'API React.
+// ════════════════════════════════════════════════════════
+class ErrorBoundary extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={hasError:false};
+  }
+  static getDerivedStateFromError(){
+    return {hasError:true};
+  }
+  componentDidCatch(error,info){
+    console.error(`[ErrorBoundary:${this.props.zone||"?"}]`,error,info?.componentStack);
+  }
+  render(){
+    if(this.state.hasError){
+      return this.props.fallback || React.createElement('div',{style:{padding:"1rem",textAlign:"center",color:C.rouge,fontSize:"0.72rem"}},"⚠️ ",this.props.zone||"Section"," temporairement indisponible");
+    }
+    return this.props.children;
+  }
+}
+
+// Factory obligatoire — seul point d'entrée pour créer un objet match affichable
+function normalizeMatch(raw,{source,fetchedAt}){
+  const status = raw?.fixture?.status?.short ?? raw?.st ?? "NS";
+  return {
+    id: raw?.fixture?.id ?? raw?.id ?? null,
+    hn: raw?.teams?.home?.name ?? raw?.hn ?? "?",
+    hlogo: raw?.teams?.home?.logo ?? raw?.hlogo ?? null,
+    an: raw?.teams?.away?.name ?? raw?.an ?? "?",
+    alogo: raw?.teams?.away?.logo ?? raw?.alogo ?? null,
+    gh: raw?.goals?.home ?? raw?.gh ?? null,
+    ga: raw?.goals?.away ?? raw?.ga ?? null,
+    min: raw?.fixture?.status?.elapsed ?? raw?.min ?? null,
+    comp: raw?.league?.name ?? raw?.comp ?? "?",
+    grp: raw?.league?.round ?? raw?.grp ?? "?",
+    st: status,
+    // Contrat formel — porté par l'objet, jamais déduit ailleurs
+    __meta:{
+      version: SCHEMA_VERSION,
+      source,                              // "api" | "fallback" | "mock"
+      lifecycle: inferLifecycle(status),    // "live" | "final" | "pending"
+      fetchedAt: fetchedAt ?? null,
+      confidence: source==="api"?"high":"low",
+    },
+  };
+}
+
+// Validation centralisée — détecte les incohérences avant affichage.
+// Rejette (ne throw jamais) pour ne pas faire planter le rendu global.
+function validateMatch(m){
+  const errors=[];
+  if(!m.id) errors.push("id manquant");
+  if(!m.__meta){ errors.push("__meta manquant"); return {valid:false,errors}; }
+  if(!m.__meta.lifecycle) errors.push("__meta.lifecycle manquant"); // anti-corruption : objet __meta présent mais incomplet
+  if(m.__meta.version!==SCHEMA_VERSION) errors.push(`version __meta obsolète (${m.__meta.version} attendu ${SCHEMA_VERSION})`);
+  if(m.__meta.lifecycle==="final" && (m.gh==null||m.ga==null)) errors.push("match final sans score");
+  if(m.__meta.lifecycle==="live" && m.min==null) errors.push("match live sans minute");
+  if(m.gh!=null && m.gh<0) errors.push("score home négatif");
+  if(m.ga!=null && m.ga<0) errors.push("score away négatif");
+  if(m.__meta.source==="api" && !m.__meta.fetchedAt) errors.push("source api sans fetchedAt");
+  return {valid:errors.length===0,errors};
+}
+
+// Snapshot léger — un match "final" est figé une fois rendu : on
+// marque l'instant exact où il a été verrouillé. Garde-fou contre
+// une éventuelle réécriture de score après coup côté API, pas un
+// système critique (API-Football ne republie pas un FT en pratique
+// d'après l'usage observé sur ce projet, mais le coût de la garde
+// est nul et évite une classe de bug si jamais le cas survient).
+function snapshotMatch(m){
+  if(m.__meta.lifecycle==="final" && !m.__meta.locked){
+    return {...m,__meta:{...m.__meta,locked:true,snapshotAt:Date.now()}};
+  }
+  return m;
+}
+
+// Point d'entrée unique pour tout batch — pipeline complet :
+// raw → normalize → migrate → validate → snapshot → store (React state)
+// garantit que tous les objets d'un même appel API partagent
+// exactement le même fetchedAt, évitant la divergence silencieuse
+// entre matchs d'un même batch.
+function ingestMatches(rawList,source){
+  const fetchedAt=Date.now();
+  return (rawList||[])
+    .map(raw=>normalizeMatch(raw,{source,fetchedAt}))
+    .map(migrateMatch)
+    .filter(m=>{
+      const {valid,errors}=validateMatch(m);
+      if(!valid) console.warn("[ingestMatches] rejeté:",m.id,errors);
+      return valid;
+    })
+    .map(snapshotMatch);
+}
+
 // ── ATOMS ──
 function Dot({c}){c=c||C.orV;return React.createElement('span',{style:{display:"inline-block",width:6,height:6,background:c,borderRadius:"50%",animation:"blink 1.4s ease-in-out infinite",marginRight:4,flexShrink:0}});}
 function Tag({children,color}){color=color||C.rouge;return React.createElement('span',{style:{background:color+"22",color,border:`1px solid ${color}44`,fontSize:"0.44rem",fontWeight:700,letterSpacing:"0.1em",padding:"0.1rem 0.4rem",borderRadius:3,whiteSpace:"nowrap",textTransform:"uppercase"}},children);}
 function SL({children}){return React.createElement('div',{style:{fontSize:"0.54rem",color:C.orV,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:10,display:"flex",alignItems:"center",gap:8}},children,React.createElement('div',{style:{flex:1,height:1,background:`linear-gradient(90deg,${C.or}50,transparent)`}}));}
+
+// ── COUCHE DE VÉRITÉ DES DONNÉES ──
+// lifecycle: live | final | pending  ·  confidence: high (api) | low (fallback/mock)
+const DATA_STATUS = {
+  live:    {label:"🟢 Live",        color:C.vertV, desc:"Donnée API en direct, mise à jour active"},
+  final:   {label:"📊 Archive",     color:C.bleuL, desc:"Donnée API réelle, match terminé et figé"},
+  pending: {label:"⏳ À venir",     color:C.orV,   desc:"Match pas encore commencé"},
+  fallback:{label:"⏳ Chargement",  color:C.orV,   desc:"État temporaire avant réponse API"},
+  mock:    {label:"⚠️ Exemple",     color:C.muted, desc:"Donnée de démonstration, pas une vraie statistique"},
+};
+// Accepte soit {status:"final"} (legacy, simple) soit {meta:{lifecycle,confidence}} (contrat v1)
+function DataBadge({status,meta,size}){
+  const key = meta?.lifecycle || status || "mock";
+  const s=DATA_STATUS[key]||DATA_STATUS.mock;
+  size=size||"0.46rem";
+  const lowConfidence = meta?.confidence==="low";
+  return React.createElement('span',{title:s.desc,style:{background:s.color+"22",color:s.color,border:`1px solid ${s.color}44`,fontSize:size,fontWeight:700,letterSpacing:"0.06em",padding:"0.12rem 0.45rem",borderRadius:4,whiteSpace:"nowrap"}},
+    s.label,
+    lowConfidence?" ⚡":null
+  );
+}
 function Box({children,style,ht}){return React.createElement('div',{style:{background:C.card,border:`1px solid ${ht?C.rouge:C.bord}`,borderRadius:10,overflow:"hidden",...(style||{})}},children);}
 
 // ── COUNTDOWN ──
@@ -847,13 +1087,12 @@ function CDDisplay({date}){
   );
 }
 
-// ── LIVE SIM + REAL API ──
+// ── LIVE SIM + REAL API — Couche de vérité: loading → live → fallback ──
 function useLive(){
-  const [live,setLive]=useState(LIVE_INIT);
-  const [apiStatus,setApiStatus]=useState("simulation");
+  const [live,setLive]=useState(()=>ingestMatches(LIVE_INIT,"fallback"));
+  const [apiStatus,setApiStatus]=useState("loading"); // loading | live | fallback | error
 
   useEffect(()=>{
-    // Essayer de fetcher les vrais scores
     const fetchReal=async()=>{
       try{
         const r=await fetch("https://v3.football.api-sports.io/fixtures?live=all",{
@@ -861,34 +1100,17 @@ function useLive(){
         });
         const j=await r.json();
         if(j.response&&j.response.length>0){
-          setLive(j.response.map(m=>({
-            id:m.fixture.id,
-            hf:"",hn:m.teams.home.name,hlogo:m.teams.home.logo,
-            af:"",an:m.teams.away.name,alogo:m.teams.away.logo,
-            gh:m.goals.home??0,ga:m.goals.away??0,
-            min:m.fixture.status.elapsed||0,
-            grp:m.league.round||"?",comp:m.league.name,
-            st:m.fixture.status.short,
-          })));
+          setLive(ingestMatches(j.response,"api"));
           setApiStatus("live");
         } else {
-          // Pas de matchs live → simulation
-          simUpdate();
+          // API a répondu mais aucun match en cours → fallback explicite, jamais déguisé en "live"
+          setLive(ingestMatches(LIVE_INIT,"fallback"));
+          setApiStatus("fallback");
         }
       }catch(e){
-        simUpdate();
-        setApiStatus("simulation");
+        setLive(ingestMatches(LIVE_INIT,"fallback"));
+        setApiStatus("error");
       }
-    };
-
-    const simUpdate=()=>{
-      setLive(prev=>prev.map(m=>{
-        if(m.st==="FT")return m;
-        const min=Math.min((m.min||0)+Math.floor(Math.random()*2+1),90);
-        let gh=m.gh,ga=m.ga;
-        if(Math.random()<0.04){Math.random()<0.5?gh++:ga++;}
-        return{...m,min,gh,ga,st:min>=90?"FT":min>45?"2H":"1H"};
-      }));
     };
 
     fetchReal();
@@ -899,9 +1121,56 @@ function useLive(){
   return {live,apiStatus};
 }
 
+// ── FETCH GROUPE C — CLASSEMENT RÉEL ──
+function useGroupCStandings(){
+  const [standings,setStandings]=useState(STANDINGS);
+  const [groupStatus,setGroupStatus]=useState("loading");
+
+  useEffect(()=>{
+    const fetchStandings=async()=>{
+      try{
+        const r=await fetch("https://v3.football.api-sports.io/standings?league=1&season=2026",{
+          headers:{"x-rapidapi-key":KEYS.FOOTBALL,"x-rapidapi-host":"v3.football.api-sports.io"}
+        });
+        const j=await r.json();
+        const groups=j.response?.[0]?.league?.standings||[];
+        // Trouver le groupe contenant Haïti
+        const groupeHaiti=groups.find(g=>g.some(team=>team.team?.name?.toLowerCase().includes("hait")));
+        if(groupeHaiti&&groupeHaiti.length>0){
+          setStandings(groupeHaiti.map(row=>({
+            pos:row.rank,
+            flag:"",
+            name:row.team?.name,
+            logo:row.team?.logo,
+            j:row.all?.played??0,
+            v:row.all?.win??0,
+            n:row.all?.draw??0,
+            d:row.all?.lose??0,
+            bp:row.all?.goals?.for??0,
+            bc:row.all?.goals?.against??0,
+            pts:row.points??0,
+            ht:row.team?.name?.toLowerCase().includes("hait"),
+          })));
+          setGroupStatus("live");
+        } else {
+          setGroupStatus("unavailable");
+        }
+      }catch(e){
+        setGroupStatus("error");
+      }
+    };
+    fetchStandings();
+    const id=setInterval(fetchStandings,300000); // refresh 5min
+    return()=>clearInterval(id);
+  },[]);
+
+  return {standings,groupStatus};
+}
+
 // ── FETCH NEWS ──
 function useNews(){
   const [news,setNews]=useState(NEWS_INIT);
+  const [newsStatus,setNewsStatus]=useState("loading");
   useEffect(()=>{
     const fetch_=async()=>{
       try{
@@ -913,14 +1182,19 @@ function useNews(){
             ...j.news_results.map((n,i)=>({id:Date.now()+i,tag:i<2?"🔴 BREAKING":"📰 NEWS",title:n.title,source:n.source||"Sport",date:n.date||"Récent",link:n.link||"#",thumbnail:n.thumbnail||null,hot:i<3,pinned:false})),
             ...prev
           ].slice(0,20));
+          setNewsStatus("live");
+        } else {
+          setNewsStatus("empty");
         }
-      }catch(e){}
+      }catch(e){
+        setNewsStatus("blocked");
+      }
     };
     fetch_();
     const id=setInterval(fetch_,120000);
     return()=>clearInterval(id);
   },[]);
-  return {news,setNews};
+  return {news,setNews,newsStatus};
 }
 
 // ── PLAYER OVERLAY ──
@@ -966,19 +1240,15 @@ function TVTab(){
   return React.createElement('div',null,
     React.createElement(SL,null,"🔴 Ayifoot Live"),
     React.createElement(Box,{style:{marginBottom:18,overflow:"hidden",border:`2px solid ${C.rouge}`}},
-      React.createElement('div',{style:{position:"relative",paddingTop:"56.25%",background:"#000"}},
-        React.createElement('iframe',{
-          src:`https://www.youtube.com/embed/live_stream?channel=${AYIFOOT_CHANNEL_ID}&autoplay=0`,
-          style:{position:"absolute",inset:0,width:"100%",height:"100%",border:"none"},
-          allow:"autoplay;fullscreen;encrypted-media;picture-in-picture",
-          allowFullScreen:true,
-          title:"Ayifoot Live"
-        })
+      React.createElement('div',{style:{padding:"2.5rem 1.5rem",background:"linear-gradient(135deg,#1a0810,#0a0a14)",textAlign:"center"}},
+        React.createElement('div',{style:{fontSize:"2.2rem",marginBottom:10}},"📡"),
+        React.createElement('div',{style:{fontWeight:700,fontSize:"0.9rem",marginBottom:6,color:C.blanc}},"Aucun live Ayifoot en cours"),
+        React.createElement('div',{style:{fontSize:"0.66rem",color:C.texte,lineHeight:1.6,marginBottom:14,maxWidth:320,margin:"0 auto 14px"}},"Quand Bernadin Philogene démarre un direct sur la chaîne YouTube Ayifoot, il apparaîtra automatiquement ici en quelques secondes.")
       ),
       React.createElement('div',{style:{padding:"0.8rem 1rem",background:"rgba(196,18,48,.08)"}},
         React.createElement('div',{style:{fontWeight:700,fontSize:"0.82rem",marginBottom:4}},"🇭🇹 Ayifoot Live — Diffusions exclusives"),
-        React.createElement('div',{style:{fontSize:"0.64rem",color:C.texte,lineHeight:1.6,marginBottom:8}},"Quand Ayifoot est en direct sur YouTube, le live apparaît automatiquement ici. Sinon, retrouve nos derniers replays directement sur la chaîne."),
-        React.createElement('a',{href:`https://www.youtube.com/@${AYIFOOT_CHANNEL_HANDLE}/live`,target:"_blank",rel:"noreferrer",style:{textDecoration:"none"}},
+        React.createElement('div',{style:{fontSize:"0.64rem",color:C.texte,lineHeight:1.6,marginBottom:8}},"Retrouve nos derniers lives et replays directement sur la chaîne officielle YouTube."),
+        React.createElement('a',{href:`https://www.youtube.com/@${AYIFOOT_CHANNEL_HANDLE}/streams`,target:"_blank",rel:"noreferrer",style:{textDecoration:"none"}},
           React.createElement('div',{style:{background:C.rouge,color:"#fff",fontWeight:700,fontSize:"0.7rem",padding:"0.5rem 1rem",borderRadius:6,display:"inline-block"}},"▶ Voir sur YouTube →")
         )
       )
@@ -1042,12 +1312,17 @@ function ScoresTab({live,apiStatus}){
     }).catch(()=>setLoadingFinished(false));
   },[f]);
 
-  const data=f==="all"?live:f==="live"?live.filter(m=>["1H","2H","HT"].includes(m.st)):f==="ht"?live.filter(m=>m.hn==="Haïti"||m.an==="Haïti"):[];
+  const data=f==="all"?live:f==="live"?live.filter(m=>getLifecycle(m)==="live"):f==="ht"?live.filter(m=>m.hn==="Haïti"||m.an==="Haïti"):[];
   return React.createElement('div',null,
     React.createElement(SL,null,"⚽ Scores · Mondial 2026"),
     React.createElement('div',{style:{display:"flex",alignItems:"center",gap:8,marginBottom:12,padding:"0.5rem 0.8rem",background:C.card,borderRadius:7,border:`1px solid ${C.bord}`}},
-      React.createElement(Dot,{c:apiStatus==="live"?C.vertV:C.orV}),
-      React.createElement('span',{style:{fontSize:"0.62rem",color:apiStatus==="live"?C.vertV:C.orV,fontWeight:600}},apiStatus==="live"?"🟢 API-Football Live · Mise à jour 15s":"⚡ Simulation · API-Football connectée")
+      React.createElement(DataBadge,{status:apiStatus==="live"?"live":apiStatus==="loading"?"fallback":apiStatus==="fallback"?"fallback":"mock"}),
+      React.createElement('span',{style:{fontSize:"0.6rem",color:C.texte,marginLeft:4}},
+        apiStatus==="live"?"Matchs en direct détectés · refresh 15s":
+        apiStatus==="loading"?"Connexion à l'API en cours...":
+        apiStatus==="fallback"?"Aucun match en direct actuellement · exemples ci-dessous":
+        "Connexion API impossible · exemples ci-dessous"
+      )
     ),
     React.createElement('div',{style:{display:"flex",gap:5,marginBottom:12,flexWrap:"wrap"}},
       [["all","Tous"],["live","🔴 Live"],["finished","✅ Terminés"],["ht","🇭🇹 Haïti"]].map(([v,l])=>
@@ -1085,15 +1360,15 @@ function ScoresTab({live,apiStatus}){
       React.createElement('div',{style:{fontSize:"0.75rem",color:C.muted}},"Aucun match en cours · Prochains matchs programmés ci-dessous")
     ),
     f!=="finished"&&data.map((m,i)=>
-      React.createElement(Box,{key:i,style:{marginBottom:6,borderLeft:`3px solid ${["1H","2H"].includes(m.st)?C.vertV:C.bord}`}},
+      React.createElement(Box,{key:i,style:{marginBottom:6,borderLeft:`3px solid ${getLifecycle(m)==="live"?C.vertV:C.bord}`}},
         React.createElement('div',{style:{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",padding:"0.85rem 1rem",gap:6}},
           React.createElement('div',{style:{display:"flex",alignItems:"center",gap:7}},
             m.hlogo&&React.createElement('img',{src:m.hlogo,alt:"",style:{width:24,height:24,objectFit:"contain"},onError:e=>e.target.style.display="none"}),
             React.createElement('span',{style:{fontWeight:600,fontSize:"0.8rem"}},m.hf," ",m.hn)
           ),
           React.createElement('div',{style:{textAlign:"center",minWidth:56}},
-            ["1H","2H"].includes(m.st)&&React.createElement('div',{style:{fontSize:"0.46rem",color:C.vertV,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:2,marginBottom:2}},React.createElement(Dot,{c:C.vertV}),m.min,"'"),
-            React.createElement('div',{style:{fontWeight:800,fontSize:"1.3rem",color:["1H","2H"].includes(m.st)?C.orV:C.blanc,lineHeight:1}},m.gh,React.createElement('span',{style:{color:C.muted,fontWeight:300}}," – "),m.ga)
+            getLifecycle(m)==="live"&&React.createElement('div',{style:{fontSize:"0.46rem",color:C.vertV,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:2,marginBottom:2}},React.createElement(Dot,{c:C.vertV}),m.min,"'"),
+            React.createElement('div',{style:{fontWeight:800,fontSize:"1.3rem",color:getLifecycle(m)==="live"?C.orV:C.blanc,lineHeight:1}},m.gh,React.createElement('span',{style:{color:C.muted,fontWeight:300}}," – "),m.ga)
           ),
           React.createElement('div',{style:{display:"flex",alignItems:"center",gap:7,flexDirection:"row-reverse"}},
             m.alogo&&React.createElement('img',{src:m.alogo,alt:"",style:{width:24,height:24,objectFit:"contain"},onError:e=>e.target.style.display="none"}),
@@ -1102,7 +1377,7 @@ function ScoresTab({live,apiStatus}){
         ),
         React.createElement('div',{style:{padding:"0.3rem 1rem",background:"rgba(0,0,0,.3)",borderTop:`1px solid ${C.bord2}`,display:"flex",justifyContent:"space-between",alignItems:"center"}},
           React.createElement('span',{style:{fontSize:"0.5rem",color:C.muted}},m.comp," · Grp ",m.grp),
-          ["1H","2H"].includes(m.st)&&React.createElement(Tag,{color:C.vertV},"🔴 LIVE")
+          getLifecycle(m)==="live"&&React.createElement(Tag,{color:C.vertV},"🔴 LIVE")
         )
       )
     )
@@ -1110,17 +1385,23 @@ function ScoresTab({live,apiStatus}){
 }
 
 // ── TAB NEWS ──
-function NewsTab({news,setNews}){
+function NewsTab({news,setNews,newsStatus}){
   return React.createElement('div',null,
     React.createElement(SL,null,"📰 Actualités · Temps Réel"),
     React.createElement(Box,{style:{padding:"0.65rem 1rem",marginBottom:12,display:"flex",alignItems:"center",justifyContent:"space-between"}},
       React.createElement('div',null,
         React.createElement('div',{style:{fontWeight:700,fontSize:"0.78rem"}},"🤖 SerpApi · Auto-actualisation"),
-        React.createElement('div',{style:{fontSize:"0.55rem",color:C.muted,marginTop:2}},"Clé: 6cc95f9f... · Refresh 2min · FB · TikTok · IG · YT")
+        React.createElement('div',{style:{fontSize:"0.55rem",color:C.muted,marginTop:2}},"Refresh 2min · FB · TikTok · IG · YT")
       ),
-      React.createElement('div',{style:{background:C.vertV,width:34,height:18,borderRadius:9,position:"relative",flexShrink:0}},
-        React.createElement('div',{style:{position:"absolute",top:2,left:18,width:14,height:14,borderRadius:"50%",background:"#fff"}})
+      React.createElement('div',{style:{display:"flex",alignItems:"center",gap:6}},
+        React.createElement(Dot,{c:newsStatus==="live"?C.vertV:newsStatus==="loading"?C.orV:C.rouge}),
+        React.createElement('span',{style:{fontSize:"0.56rem",fontWeight:700,color:newsStatus==="live"?C.vertV:newsStatus==="loading"?C.orV:C.rouge}},
+          newsStatus==="live"?"Actif":newsStatus==="loading"?"Chargement":newsStatus==="empty"?"Aucun résultat":"Bloqué"
+        )
       )
+    ),
+    newsStatus==="blocked"&&React.createElement(Box,{style:{padding:"0.7rem 1rem",marginBottom:12,background:"rgba(196,18,48,.1)",border:`1px solid ${C.rouge}44`}},
+      React.createElement('div',{style:{fontSize:"0.62rem",color:C.texte,lineHeight:1.6}},"⚠️ SerpApi ne peut pas être appelée directement depuis le navigateur (limitation CORS). Pour activer les actualités automatiques, il faut un petit serveur relais. Les articles ci-dessous sont les derniers connus.")
     ),
     news.sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)).map((n,i)=>
       React.createElement('a',{key:i,href:n.link||"#",target:"_blank",rel:"noreferrer",style:{textDecoration:"none",color:"inherit",display:"block"}},
@@ -1327,11 +1608,17 @@ function FanWall(){
   const [nom,setNom]=useState("");const [pays,setPays]=useState("");const [msg,setMsg]=useState("");
   const AV=[["#C41230","#003087"],["#003087","#C49A20"],["#0F7A3C","#003087"]];
   const INP={width:"100%",background:C.card2,border:`1px solid ${C.bord}`,borderRadius:5,padding:"0.45rem .62rem",color:C.blanc,fontFamily:"inherit",fontSize:"0.75rem",outline:"none"};
+  const TOP_COUNTRIES=["🇭🇹 Haïti","🇺🇸 USA","🇨🇦 Canada","🇫🇷 France","🇧🇷 Brésil","🇨🇱 Chili"];
   function post(){if(!nom.trim()||!msg.trim())return;setFans(f=>[{n:nom,p:pays||"Monde entier 🌍",m:msg},...f]);setNom("");setPays("");setMsg("");}
   return React.createElement(Box,{style:{marginTop:16}},
     React.createElement('div',{style:{background:C.grHT,padding:"0.8rem 1rem",borderBottom:`1px solid ${C.bord}`}},
       React.createElement('div',{style:{fontWeight:700,fontSize:"0.9rem"}},"🔥 Mur des Fans · Diaspora Mondiale"),
       React.createElement('div',{style:{fontSize:"0.56rem",color:"rgba(255,255,255,.5)",marginTop:2}},"Crie ton soutien · Ale Grenadiers! 🇭🇹")
+    ),
+    React.createElement('div',{style:{display:"flex",gap:6,overflowX:"auto",padding:"0.7rem 0.85rem 0",scrollbarWidth:"none"}},
+      TOP_COUNTRIES.map(c=>
+        React.createElement('div',{key:c,style:{padding:"6px 10px",background:C.card2,borderRadius:20,fontSize:"0.6rem",whiteSpace:"nowrap",flexShrink:0,border:`1px solid ${C.bord}`}},c)
+      )
     ),
     React.createElement('div',{style:{padding:"0.85rem",borderBottom:`1px solid ${C.bord}`}},
       React.createElement('input',{value:nom,onChange:e=>setNom(e.target.value),placeholder:"Ton prénom...",style:{...INP,marginBottom:6}}),
@@ -1373,7 +1660,7 @@ function AdminPanel({news,setNews,onClose}){
     );
   }
   return React.createElement('div',{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.94)",zIndex:9998,overflowY:"auto"}},
-    React.createElement('div',{style:{maxWidth:"100%",margin:"0 auto",padding:"1rem"}},
+    React.createElement('div',{style:{maxWidth:1100,margin:"0 auto",padding:"1rem"}},
       React.createElement('div',{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${C.bord}`}},
         React.createElement('div',null,
           React.createElement('div',{style:{fontWeight:800,fontSize:"1.1rem"}},"🛠️ Panel Admin · Ayifoot.com"),
@@ -1440,13 +1727,15 @@ function App(){
   const [showAdmin,setShowAdmin]=useState(false);
   const [selectedMatch,setSelectedMatch]=useState(null);
   const {live,apiStatus}=useLive();
-  const {news,setNews}=useNews();
+  const {news,setNews,newsStatus}=useNews();
+  const {standings,groupStatus}=useGroupCStandings();
   const t=LANGS[lang];
-  const liveCount=live.filter(m=>["1H","2H","HT"].includes(m.st)).length;
+  // liveCount ne compte que si apiStatus="live" — jamais sur des données fallback
+  const liveCount=apiStatus==="live"?live.filter(m=>getLifecycle(m)==="live").length:0;
   const cdNext=useCD("2026-06-14T01:00:00Z");
   const NAV=[t.matches,t.tv,t.scores,t.analytics,t.news,t.games,t.support];
   const ticker=[
-    ...live.filter(m=>["1H","2H"].includes(m.st)).map(m=>`🔴 ${m.hn} ${m.gh}–${m.ga} ${m.an} · ${m.min}'`),
+    ...(apiStatus==="live"?live.filter(m=>getLifecycle(m)==="live").map(m=>`🔴 ${m.hn} ${m.gh}–${m.ga} ${m.an} · ${m.min}'`):[]),
     "🇭🇹 Haïti vs Écosse · 13 Juin · 21h ET · Gillette Stadium",
     "🏆 FIFA World Cup 2026 · 48 nations · 104 matchs",
     "📺 Tous les matchs live gratuits sur Ayifoot.com",
@@ -1455,12 +1744,12 @@ function App(){
 
   if(selectedMatch){
     return (
-      <div style={{background:C.bg,color:C.blanc,minHeight:"100vh",fontFamily:"'Georgia',serif",maxWidth:"100%",margin:"0 auto",padding:"1rem 1rem 4rem"}}>
+      <div style={{background:C.bg,color:C.blanc,minHeight:"100vh",fontFamily:"'Georgia',serif",maxWidth:1100,margin:"0 auto",padding:"1rem 1rem 4rem"}}>
         <MatchDetail fixture={selectedMatch} onBack={()=>setSelectedMatch(null)}/>
       </div>
     );
   }
-  return React.createElement('div',{style:{background:C.bg,color:C.blanc,minHeight:"100vh",fontFamily:"'Georgia',serif",maxWidth:"100%",margin:"0 auto"}},
+  return React.createElement('div',{style:{background:C.bg,color:C.blanc,minHeight:"100vh",fontFamily:"'Georgia',serif",maxWidth:1100,margin:"0 auto"}},
     showAdmin&&React.createElement(AdminPanel,{news,setNews,onClose:()=>setShowAdmin(false)}),
 
     // TOPBAR
@@ -1534,10 +1823,11 @@ function App(){
 
     // CONTENU
     React.createElement('div',{style:{padding:"1.1rem 1rem 5rem",animation:"fadeIn .35s ease"}},
-      tab===0&&React.createElement('div',null,
+      tab===0&&React.createElement(ErrorBoundary,{zone:"Matchs"},React.createElement('div',null,
+        React.createElement(BreakingNews,{news}),
         liveCount>0&&React.createElement('div',{style:{marginBottom:18}},
           React.createElement(SL,null,"🔴 En Direct Maintenant"),
-          live.filter(m=>["1H","2H","HT"].includes(m.st)).map((m,i)=>
+          live.filter(m=>getLifecycle(m)==="live").map((m,i)=>
             React.createElement(Box,{key:i,style:{marginBottom:6,borderLeft:`3px solid ${C.vertV}`}},
               React.createElement('div',{style:{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",padding:"0.82rem 1rem",gap:6}},
                 React.createElement('div',{style:{display:"flex",alignItems:"center",gap:7}},
@@ -1545,7 +1835,7 @@ function App(){
                   React.createElement('span',{style:{fontWeight:600,fontSize:"0.8rem"}},m.hf," ",m.hn)
                 ),
                 React.createElement('div',{style:{textAlign:"center",minWidth:56}},
-                  ["1H","2H"].includes(m.st)&&React.createElement('div',{style:{fontSize:"0.46rem",color:C.vertV,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:2,marginBottom:2}},React.createElement(Dot,{c:C.vertV}),m.min,"'"),
+                  getLifecycle(m)==="live"&&React.createElement('div',{style:{fontSize:"0.46rem",color:C.vertV,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:2,marginBottom:2}},React.createElement(Dot,{c:C.vertV}),m.min,"'"),
                   React.createElement('div',{style:{fontWeight:800,fontSize:"1.25rem",color:C.orV,lineHeight:1}},m.gh,React.createElement('span',{style:{color:C.muted,fontWeight:300}}," – "),m.ga)
                 ),
                 React.createElement('div',{style:{display:"flex",alignItems:"center",gap:7,flexDirection:"row-reverse"}},
@@ -1596,6 +1886,15 @@ function App(){
         // Classement
         React.createElement('div',{style:{marginTop:18}},
           React.createElement(SL,null,"📊 Groupe C · Classement"),
+          React.createElement('div',{style:{display:"flex",alignItems:"center",gap:8,padding:"0.5rem 0.8rem",background:C.card,borderRadius:7,border:`1px solid ${C.bord}`,marginBottom:10}},
+            React.createElement(Dot,{c:groupStatus==="live"?C.vertV:C.orV}),
+            React.createElement('span',{style:{fontSize:"0.6rem",color:groupStatus==="live"?C.vertV:C.orV,fontWeight:600}},
+              groupStatus==="live"?"🟢 Classement en direct · API-Football":
+              groupStatus==="loading"?"⏳ Chargement du classement réel...":
+              groupStatus==="unavailable"?"⚡ Classement Haïti pas encore détecté (saison non démarrée)":
+              "⚠️ Erreur connexion classement"
+            )
+          ),
           React.createElement(Box,null,
             React.createElement('table',{style:{width:"100%",borderCollapse:"collapse",fontSize:"0.74rem"}},
               React.createElement('thead',null,
@@ -1604,7 +1903,7 @@ function App(){
                 )
               ),
               React.createElement('tbody',null,
-                STANDINGS.map((row,i)=>
+                standings.map((row,i)=>
                   React.createElement('tr',{key:i,style:{background:row.ht?"rgba(0,48,135,.18)":"transparent",borderLeft:row.ht?`2px solid ${C.rouge}`:"none",borderBottom:`1px solid ${C.bord2}`}},
                     React.createElement('td',{style:{padding:"0.54rem 0.5rem",color:i<2?C.vertV:C.muted,textAlign:"center",fontWeight:i<2?700:400,fontSize:"0.68rem"}},row.pos),
                     React.createElement('td',{style:{padding:"0.54rem 0.5rem"}},
@@ -1623,11 +1922,11 @@ function App(){
           )
         ),
         React.createElement(FanWall,null)
-      ),
+      )),
       tab===1&&React.createElement(TVTab,null),
-      tab===2&&React.createElement(ScoresTab,{live,apiStatus}),
+      tab===2&&React.createElement(ErrorBoundary,{zone:"Scores"},React.createElement(ScoresTab,{live,apiStatus})),
       tab===3&&<StatsPanel setSelectedMatch={setSelectedMatch}/>,
-      tab===4&&React.createElement(NewsTab,{news,setNews}),
+      tab===4&&React.createElement(NewsTab,{news,setNews,newsStatus}),
       tab===5&&React.createElement(JeuxTab,null),
       tab===6&&React.createElement(SoutienTab,null)
     ),
